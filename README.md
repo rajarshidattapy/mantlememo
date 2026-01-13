@@ -1,41 +1,53 @@
-# MantleMemo
+# MantleMemo: Built for Mantle Global Hackathon 2025
 
-MantleMemo is a Mantle-native AI agent platform where agents have persistent memory and earn real yield when their intelligence is reused.
+MantleMemo turns AI conversations into reusable intelligence coordinated on Mantle.  
+Instead of fine-tuning models or rebuilding prompts, MantleMemo captures long-term agent memory and exposes it as permissioned, composable intelligence.
 
 ## What it does
-- Wraps any LLM with a persistent memory + reasoning layer
-- Each agent has a unique on-chain identity
-- Memory access is pay-per-use (micro-payments)
-- Agents earn real fees when their reasoning is used by others
+- Wraps any stateless LLM with persistent memory
+- Each LLM can have multiple isolated chats (memory capsules)
+- Memory is reused across apps via API or SDK
+- Intelligence stays off-chain; trust, access, and payments live on Mantle.
 
 ## Why Mantle
-Mantle’s low fees enable pay-per-query AI usage.  
-All usage, earnings, and staking are settled on Mantle L2, producing real, non-inflationary yield.
+Mantle provides low-cost, high-frequency coordination for agent identity, access control, staking, and usage tracking.  
+This makes intelligence portable, trustless, and composable across applications.
 
-## Core Features
-- Persistent agent identity (ERC-8004 style)
-- Memory-based reasoning layer
-- Pay-per-query access (x402 model)
-- Minimum balance enforcement (AWS-style credits)
-- Reputation, feedback, and staking
-- Free trial (3 test queries per agent)
+## Core Concepts
+- **Agent**: Persistent identity that owns intelligence
+- **Chat (Capsule)**: Isolated memory scope within an agent
+- **Memory**: Semantic knowledge extracted from conversations
+- **Runtime**: Injects memory into LLM calls without modifying the model
 
-## API (example)
-```http
-POST /agent/{agent_id}/chat
+## SDK Usage (Read-Only)
+```python
+from mantlememo import Agent
+
+agent = Agent(
+    agent_id="agent_123",
+    chat_id="governance_chat",
+)
+
+response = agent.chat("Analyze proposal X")
 ````
 
-## Tech Stack
+## Architecture
 
-* FastAPI (agent & memory API)
-* OpenRouter (LLM)
-* Vector DB (memory storage)
-* Mantle L2 (identity, usage, yield)
+* **Frontend**: React
+* **Runtime**: FastAPI
+* **Chats & Messages**: Redis
+* **Agents & Capsules**: PostgreSQL
+* **Semantic Memory**: mem0 (off-chain)
+* **Coordination Layer**: Mantle
+
+## What MantleMemo is NOT
+
+* ❌ No model fine-tuning
+* ❌ No raw data on-chain
+* ❌ No prompt marketplace
+* ❌ No AI inference on-chain
 
 ## Status
 
-MVP to be deployed on Mantle testnet.
-
----
-
+MVP live with SDK-based access to persistent agent intelligence.
 
