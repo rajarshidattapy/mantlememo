@@ -5,12 +5,20 @@ if (!API_BASE_URL) {
   throw new Error('VITE_API_BASE_URL environment variable is required');
 }
 
+// Ensure the URL has a protocol
+const normalizeUrl = (url: string): string => {
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    return `http://${url}`;
+  }
+  return url;
+};
+
 export class ApiClient {
   private baseUrl: string;
   private getWalletAddress: () => string | null;
 
   constructor(getWalletAddress: () => string | null) {
-    this.baseUrl = API_BASE_URL;
+    this.baseUrl = normalizeUrl(API_BASE_URL);
     this.getWalletAddress = getWalletAddress;
   }
 

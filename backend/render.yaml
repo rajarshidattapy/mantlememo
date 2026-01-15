@@ -14,7 +14,7 @@ services:
         value: production
       # CORS Configuration - Frontend URLs
       - key: CORS_ORIGINS
-        value: https://mantlememo-nu.vercel.app
+        value: https://mantlememo.vercel.app
       # Supabase Configuration
       - key: VITE_SUPABASE_URL
         sync: false  # Set this manually in Render dashboard

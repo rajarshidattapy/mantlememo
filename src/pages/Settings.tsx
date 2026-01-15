@@ -9,12 +9,12 @@ const Settings = () => {
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const api = useApiClient();
-  const { publicKey, connected } = useWallet();
+  const { address, connected } = useWallet();
 
   // Load preferences from Redis on mount
   useEffect(() => {
     const loadPreferences = async () => {
-      if (!connected || !publicKey) return;
+      if (!connected || !address) return;
       
       try {
         const prefs = await api.getPreferences();
@@ -31,10 +31,10 @@ const Settings = () => {
     };
 
     loadPreferences();
-  }, [connected, publicKey, api]);
+  }, [connected, address, api]);
 
   const handleSave = async () => {
-    if (!connected || !publicKey) {
+    if (!connected || !address) {
       alert('Please connect your wallet to save preferences');
       return;
     }

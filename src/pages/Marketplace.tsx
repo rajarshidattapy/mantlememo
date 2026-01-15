@@ -3,7 +3,8 @@ import { Search, Star, TrendingUp, ShoppingCart, Loader2, AlertCircle, CheckCirc
 import { useNavigate } from 'react-router-dom';
 import { useWallet } from '../contexts/WalletContextProvider';
 import { useApiClient } from '../lib/api';
-import { sendPayment } from '../utils/mantlePayment';
+import { useOnChainData } from '../hooks/useOnChainData';
+import { queryCapsuleWithContract } from '../utils/mantlePayment';
 
 interface MarketplaceCapsule {
   id: string;
@@ -22,6 +23,8 @@ const Marketplace = () => {
   const apiClient = useApiClient();
   const navigate = useNavigate();
   const { address, connected, signer } = useWallet();
+  const { allCapsules, loading: onChainLoading, error: onChainError, loadAllCapsules } = useOnChainData();
+  
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [sortBy, setSortBy] = useState('popular');
@@ -32,7 +35,6 @@ const Marketplace = () => {
   const [buyingCapsuleId, setBuyingCapsuleId] = useState<string | null>(null);
   const [purchaseSuccess, setPurchaseSuccess] = useState<string | null>(null);
 
-  // Debug: Log when component mounts
   useEffect(() => {
     console.log('Marketplace component mounted');
     return () => {
@@ -40,119 +42,106 @@ const Marketplace = () => {
     };
   }, []);
 
-  // Listen for capsule staked events and refresh
   useEffect(() => {
     const handleCapsuleStaked = (event: CustomEvent) => {
       console.log('Capsule staked event received:', event.detail);
-      // Refresh capsules when a new one is staked
-      fetchCapsules();
+      loadAllCapsules();
     };
 
     window.addEventListener('capsuleStaked', handleCapsuleStaked as EventListener);
     return () => {
       window.removeEventListener('capsuleStaked', handleCapsuleStaked as EventListener);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Only set up listener once on mount
+  }, [loadAllCapsules]);
 
   const sortOptions = [
     { value: 'popular', label: 'Popular' },
     { value: 'newest', label: 'Newest' },
     { value: 'price_low', label: 'Price: Low to High' },
     { value: 'price_high', label: 'Price: High to Low' },
-    { value: 'rating', label: 'Highest Rated' }
+    { value: 'rating', label: 'Highest Rated' },
+    { value: 'stake', label: 'Highest Staked' }
   ];
 
   useEffect(() => {
-    fetchCapsules();
-    fetchCategories();
-  }, [selectedCategory, sortBy]);
+    if (allCapsules.length > 0) {
+      let processedCapsules = allCapsules.map(capsule => ({
+        id: capsule.id,
+        name: capsule.name,
+        category: capsule.category,
+        creator_wallet: capsule.creator_wallet,
+        reputation: 85,
+        stake_amount: capsule.stake_amount,
+        price_per_query: capsule.price_per_query,
+        description: capsule.description,
+        query_count: 0,
+        rating: 4.5
+      }));
 
-  // Fetch on mount to ensure we get latest data when navigating to marketplace
-  useEffect(() => {
-    fetchCapsules();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty deps - only run on mount
-
-  const fetchCapsules = async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      
-      const filters: any = {
-        sort_by: sortBy
-      };
-      
-      if (selectedCategory !== 'All') {
-        filters.category = selectedCategory;
+      switch (sortBy) {
+        case 'newest':
+          processedCapsules.sort((a, b) => b.id.localeCompare(a.id));
+          break;
+        case 'price_low':
+          processedCapsules.sort((a, b) => a.price_per_query - b.price_per_query);
+          break;
+        case 'price_high':
+          processedCapsules.sort((a, b) => b.price_per_query - a.price_per_query);
+          break;
+        case 'rating':
+          processedCapsules.sort((a, b) => b.rating - a.rating);
+          break;
+        case 'stake':
+          processedCapsules.sort((a, b) => b.stake_amount - a.stake_amount);
+          break;
+        case 'popular':
+        default:
+          processedCapsules.sort((a, b) => b.query_count - a.query_count);
+          break;
       }
-      
-      console.log('Fetching marketplace with filters:', filters);
-      const data = await apiClient.browseMarketplace(filters) as MarketplaceCapsule[];
-      console.log('Marketplace response:', data);
-      console.log('Number of capsules received:', data.length);
-      
-      // Also get staked capsules from localStorage (for immediate display after staking)
-      try {
-        const stakedCapsules = JSON.parse(localStorage.getItem('staked_capsules') || '[]') as any[];
-        console.log('Staked capsules from localStorage:', stakedCapsules);
-        
-        // Merge backend data with localStorage data
-        // Create a map of existing capsules by a unique key (name + creator_wallet)
-        const existingMap = new Map<string, MarketplaceCapsule>();
-        data.forEach(capsule => {
-          const key = `${capsule.name}-${capsule.creator_wallet}`;
-          existingMap.set(key, capsule);
-        });
-        
-        // Add staked capsules from localStorage that aren't already in backend data
-        stakedCapsules.forEach((staked: any) => {
-          const key = `${staked.name}-${staked.creator_wallet}`;
-          if (!existingMap.has(key) && staked.stake_amount > 0) {
-            // Only add if stake_amount > 0
-            existingMap.set(key, {
-              id: staked.id,
-              name: staked.name,
-              category: staked.category,
-              creator_wallet: staked.creator_wallet,
-              reputation: staked.reputation || 0,
-              stake_amount: staked.stake_amount,
-              price_per_query: staked.price_per_query,
-              description: staked.description,
-              query_count: staked.query_count || 0,
-              rating: staked.rating || 0
-            });
-          }
-        });
-        
-        // Convert map back to array
-        const mergedCapsules = Array.from(existingMap.values());
-        console.log('Merged capsules (backend + localStorage):', mergedCapsules.length);
-        setCapsules(mergedCapsules);
-      } catch (localStorageErr) {
-        console.error('Error reading from localStorage:', localStorageErr);
-        // Fallback to just backend data
-        setCapsules(data);
-      }
-    } catch (err) {
-      console.error('Error fetching capsules:', err);
-      setError(err instanceof Error ? err.message : 'Failed to load marketplace');
-    } finally {
-      setLoading(false);
-    }
-  };
 
-  const fetchCategories = async () => {
-    try {
-      const cats = await apiClient.browseMarketplace({}) as MarketplaceCapsule[];
-      const uniqueCategories = ['All', ...new Set(cats.map(c => c.category).filter(Boolean))];
+      setCapsules(processedCapsules);
+      
+      const uniqueCategories = ['All', ...new Set(processedCapsules.map(c => c.category).filter(Boolean))];
       setCategories(uniqueCategories);
-    } catch (err) {
-      console.error('Error fetching categories:', err);
-      // Fallback to default categories
-      setCategories(['All', 'Finance', 'Gaming', 'Health', 'Technology', 'Education']);
     }
-  };
+    
+    setLoading(onChainLoading);
+    setError(onChainError);
+  }, [allCapsules, sortBy, onChainLoading, onChainError]);
+
+  useEffect(() => {
+    const fetchSupplementalData = async () => {
+      try {
+        const apiCapsules = await apiClient.browseMarketplace({}) as MarketplaceCapsule[];
+        
+        setCapsules(prevCapsules => 
+          prevCapsules.map(capsule => {
+            const apiCapsule = apiCapsules.find(api => 
+              api.name === capsule.name && api.creator_wallet === capsule.creator_wallet
+            );
+            
+            if (apiCapsule) {
+              return {
+                ...capsule,
+                query_count: apiCapsule.query_count || capsule.query_count,
+                rating: apiCapsule.rating || capsule.rating,
+                reputation: apiCapsule.reputation || capsule.reputation
+              };
+            }
+            
+            return capsule;
+          })
+        );
+      } catch (err) {
+        console.log('Could not fetch supplemental data from API:', err);
+      }
+    };
+
+    if (capsules.length > 0) {
+      fetchSupplementalData();
+    }
+  }, [capsules.length, apiClient]);
 
   const handleBuy = async (capsule: MarketplaceCapsule) => {
     if (!connected || !address || !signer) {
@@ -165,24 +154,21 @@ const Marketplace = () => {
     setPurchaseSuccess(null);
 
     try {
-      // Send 0.22 MNT payment to the creator
-      const paymentResult = await sendPayment(
+      const contractResult = await queryCapsuleWithContract(
         signer,
         capsule.creator_wallet,
-        0.22 // Fixed price: 0.22 MNT
+        capsule.id,
+        capsule.price_per_query.toString()
       );
 
-      if (!paymentResult.success) {
-        throw new Error(paymentResult.error || 'Payment failed');
+      if (!contractResult.success) {
+        throw new Error(contractResult.error || 'Smart contract payment failed');
       }
 
-      // Show success message
       setPurchaseSuccess(capsule.id);
       
-      // Show success alert
-      alert(`Successfully purchased ${capsule.name}!\n\nTransaction: ${paymentResult.hash}\n\nYou can now access this chat.`);
+      alert(`Successfully purchased ${capsule.name}!\n\nTransaction: ${contractResult.hash}\n\nYou can now access this capsule.`);
       
-      // Navigate to capsule detail page after a short delay
       setTimeout(() => {
         navigate(`/app/marketplace/${capsule.id}`);
       }, 1000);
@@ -200,7 +186,10 @@ const Marketplace = () => {
     const matchesSearch = searchQuery === '' || 
                          capsule.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          capsule.description.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesSearch;
+    
+    const matchesCategory = selectedCategory === 'All' || capsule.category === selectedCategory;
+    
+    return matchesSearch && matchesCategory;
   });
 
   return (
@@ -208,10 +197,9 @@ const Marketplace = () => {
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Marketplace</h1>
-          <p className="text-gray-400">Discover and access AI memory capsules from the community</p>
+          <p className="text-gray-400">Discover and access AI memory capsules from the blockchain</p>
         </div>
 
-        {/* Search and Filters */}
         <div className="bg-gray-800 rounded-lg border border-gray-700 p-6 mb-8">
           <div className="flex flex-col lg:flex-row gap-4">
             <div className="flex-1 relative">
@@ -247,15 +235,13 @@ const Marketplace = () => {
           </div>
         </div>
 
-        {/* Loading State */}
         {loading && (
           <div className="text-center py-12">
             <Loader2 className="h-12 w-12 text-blue-400 mx-auto mb-4 animate-spin" />
-            <p className="text-gray-400">Loading marketplace...</p>
+            <p className="text-gray-400">Loading marketplace from blockchain...</p>
           </div>
         )}
 
-        {/* Error State */}
         {error && !loading && (
           <div className="bg-red-600 bg-opacity-20 border border-red-500 rounded-lg p-6 mb-6 flex items-start">
             <AlertCircle className="h-5 w-5 text-red-400 mr-3 mt-0.5" />
@@ -266,18 +252,16 @@ const Marketplace = () => {
           </div>
         )}
 
-        {/* Purchase Success State */}
         {purchaseSuccess && (
           <div className="bg-green-600 bg-opacity-20 border border-green-500 rounded-lg p-6 mb-6 flex items-start">
             <CheckCircle className="h-5 w-5 text-green-400 mr-3 mt-0.5" />
             <div>
               <h3 className="text-green-400 font-semibold mb-1">Purchase Successful!</h3>
-              <p className="text-green-200 text-sm">You have successfully purchased this chat. Redirecting...</p>
+              <p className="text-green-200 text-sm">Payment sent via smart contract. You can now access this capsule.</p>
             </div>
           </div>
         )}
 
-        {/* Capsule Grid */}
         {!loading && !error && (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -310,7 +294,7 @@ const Marketplace = () => {
 
                   <div className="grid grid-cols-3 gap-3 mb-4 text-xs">
                     <div className="bg-gray-700 rounded p-2 text-center">
-                      <div className="text-green-400 font-semibold">{capsule.stake_amount.toFixed(1)}</div>
+                      <div className="text-green-400 font-semibold">{capsule.stake_amount.toFixed(3)}</div>
                       <div className="text-gray-400">MNT Staked</div>
                     </div>
                     <div className="bg-gray-700 rounded p-2 text-center">
@@ -318,7 +302,7 @@ const Marketplace = () => {
                       <div className="text-gray-400">Queries</div>
                     </div>
                     <div className="bg-gray-700 rounded p-2 text-center">
-                      <div className="text-purple-400 font-semibold">{capsule.price_per_query.toFixed(3)}</div>
+                      <div className="text-purple-400 font-semibold">{capsule.price_per_query.toFixed(4)}</div>
                       <div className="text-gray-400">MNT/query</div>
                     </div>
                   </div>
@@ -337,7 +321,7 @@ const Marketplace = () => {
                       ) : (
                         <>
                           <ShoppingCart className="h-4 w-4 mr-1" />
-                          Buy
+                          Buy ({capsule.price_per_query.toFixed(4)} MNT)
                         </>
                       )}
                     </button>
@@ -350,9 +334,9 @@ const Marketplace = () => {
               <div className="text-center py-12">
                 {capsules.length === 0 ? (
                   <>
-                    <div className="text-gray-400 mb-2 text-lg">No capsules available in the marketplace yet</div>
+                    <div className="text-gray-400 mb-2 text-lg">No capsules available on the blockchain yet</div>
                     <div className="text-gray-500 text-sm mb-4">
-                      Stake on your agents in the Staking tab to make them available here
+                      Create and stake agents in the Staking tab to make them available here
                     </div>
                   </>
                 ) : (

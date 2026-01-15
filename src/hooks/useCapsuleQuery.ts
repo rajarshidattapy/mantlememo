@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useWallet } from '../contexts/WalletContextProvider';
 import { useApiClient } from '../lib/api';
-import { sendPayment, PaymentResult } from '../utils/mantlePayment';
+import { queryCapsuleWithContract, ContractQueryResult } from '../utils/mantlePayment';
 
 export interface QueryResult {
   response: string;
@@ -38,30 +38,33 @@ export function useCapsuleQuery() {
     try {
       let paymentHash: string | undefined;
 
-      // Send payment if price > 0
+      // Send payment via smart contract if price > 0
       if (pricePerQuery > 0) {
-        const paymentResult: PaymentResult = await sendPayment(
+        const contractResult: ContractQueryResult = await queryCapsuleWithContract(
           signer,
           creatorWallet,
-          pricePerQuery
+          capsuleId,
+          pricePerQuery.toString()
         );
 
-        if (!paymentResult.success) {
-          throw new Error(paymentResult.error || 'Payment failed');
+        if (!contractResult.success) {
+          throw new Error(contractResult.error || 'Smart contract payment failed');
         }
 
-        paymentHash = paymentResult.hash;
+        paymentHash = contractResult.hash;
       }
 
       // Query capsule with payment proof
-      const response = await apiClient.queryCapsule(capsuleId, {
+      const response: any = await apiClient.queryCapsule(capsuleId, {
         prompt,
         payment_signature: paymentHash,
         amount_paid: pricePerQuery,
       });
 
       return {
-        ...response,
+        response: response.response || '',
+        capsule_id: response.capsule_id || capsuleId,
+        price_paid: response.price_paid || pricePerQuery,
         txHash: paymentHash
       };
     } catch (err) {

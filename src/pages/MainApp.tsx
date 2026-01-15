@@ -26,7 +26,7 @@ const MainApp = () => {
   const [activeSubTab, setActiveSubTab] = useState('');
   const [customLLMs, setCustomLLMs] = useState<LLMConfig[]>([]);
   const api = useApiClient();
-  const { publicKey, connected } = useWallet();
+  const { address, connected } = useWallet();
   const preferencesLoadedRef = useRef(false);
 
   // Check if we're on a capsule detail route
@@ -43,7 +43,7 @@ const MainApp = () => {
   // Load preferences from Redis (Vercel KV) on mount (only once)
   useEffect(() => {
     if (preferencesLoadedRef.current) return; // Only load once
-    if (!connected || !publicKey) return; // Need wallet to load preferences
+    if (!connected || !address) return; // Need wallet to load preferences
     
     // Don't load preferences if we're on /marketplace route (URL takes priority)
     if (location.pathname === '/marketplace') {
@@ -69,12 +69,12 @@ const MainApp = () => {
 
     loadPreferences();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [connected, publicKey, location.pathname]); // api is stable, doesn't need to be in deps
+  }, [connected, address, location.pathname]); // api is stable, doesn't need to be in deps
 
   // Save preferences to Redis when they change
   useEffect(() => {
     const savePreferences = async () => {
-      if (!connected || !publicKey) return; // Need wallet to save preferences
+      if (!connected || !address) return; // Need wallet to save preferences
       
       try {
         await api.updatePreferences({
@@ -91,13 +91,13 @@ const MainApp = () => {
     const timeoutId = setTimeout(savePreferences, 500);
     return () => clearTimeout(timeoutId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeTab, activeSubTab, connected, publicKey?.toBase58()]); // api is stable, doesn't need to be in deps
+  }, [activeTab, activeSubTab, connected, address]); // api is stable, doesn't need to be in deps
 
   // Load custom agents from backend when wallet is connected
   useEffect(() => {
     const loadCustomAgents = async () => {
       // Only load if wallet is connected (needed for filtering user's agents)
-      if (!connected || !publicKey) {
+      if (!connected || !address) {
         setCustomLLMs([]);
         return;
       }
@@ -156,7 +156,7 @@ const MainApp = () => {
 
     loadCustomAgents();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [connected, publicKey?.toBase58()]); // Reload when wallet connects/disconnects (api is stable)
+  }, [connected, address]); // Reload when wallet connects/disconnects (api is stable)
 
   const handleAddLLM = (llm: LLMConfig) => {
     setCustomLLMs(prev => {
