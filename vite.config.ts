@@ -10,12 +10,12 @@ export default defineConfig(({ mode }) => ({
     port: 8080,
     // Proxy is dev-only - production uses VITE_API_BASE_URL directly
     // This allows local dev to proxy API calls to localhost:8000
-    proxy: {
+    proxy: mode === 'development' ? {
       '/api': {
-        target: 'http://localhost:8000',
+        target: process.env.VITE_API_BASE_URL || 'http://localhost:8000',
         changeOrigin: true,
       }
-    }
+    } : undefined
   },
   plugins: [
     react(),
@@ -37,5 +37,7 @@ export default defineConfig(({ mode }) => ({
         }
       }
     }
-  }
+  },
+  // Ensure environment variables are properly loaded
+  envPrefix: 'VITE_',
 }));
