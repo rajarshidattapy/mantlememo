@@ -48,9 +48,9 @@ const BalanceDisplay = () => {
   };
 
   return (
-    <div className="bg-gray-900 rounded-lg px-4 py-2 border border-gray-600">
-      <div className="text-sm text-gray-400">Balance</div>
-      <div className="text-lg font-semibold text-white" key={balance}>
+    <div className="card-mantle px-4 py-2 min-w-[120px]">
+      <div className="text-xs text-mantle-500 font-medium">Balance</div>
+      <div className="text-sm font-semibold text-white" key={balance}>
         {loading ? '...' : connected ? `${formatBalance(balance)} MNT` : 'N/A'}
       </div>
     </div>
@@ -191,23 +191,23 @@ const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <>
-      <div className="bg-gray-800 border-b border-gray-700">
+      <div className="nav-floating shadow-lg">
         {/* Main Navigation */}
         <div className="px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3">
               <Link
                 to="/"
-                className="hover:text-blue-400 transition-colors p-1"
+                className="nav-link-mantle p-2"
                 title="Back to landing page"
               >
-                <ArrowLeft className="h-6 w-6 text-gray-400 hover:text-blue-400" />
+                <ArrowLeft className="h-5 w-5 text-mantle-500 hover:text-mantle-400" />
               </Link>
               <img src={appLogo} alt="Mantlememo" className="h-8 w-8" />
-              <span className="text-xl font-bold text-white">Mantlememo</span>
+              <span className="heading-sm text-mantle-400">Mantlememo</span>
             </div>
 
-            <div className="flex items-center space-x-1">
+            <div className="flex items-center space-x-2">
               {mainTabs.map((tab) => {
                 const Icon = tab.icon;
                 return (
@@ -221,9 +221,9 @@ const Navbar: React.FC<NavbarProps> = ({
                         setActiveSubTab(defaultSubTabs[0].id);
                       }
                     }}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${activeTab === tab.id
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-2xl transition-all duration-250 ${activeTab === tab.id
+                      ? 'btn-mantle-primary'
+                      : 'text-mantle-400 hover:bg-white/5 hover:text-mantle-300'
                       }`}
                   >
                     <Icon className="h-5 w-5" />
@@ -240,7 +240,7 @@ const Navbar: React.FC<NavbarProps> = ({
         {/* Sub Navigation */}
         {(subTabs.length > 0 || (activeTab === 'agents' && customLLMs.length === 0)) && (
           <div className="px-6 pb-4">
-            <div className="flex space-x-1 flex-wrap gap-1">
+            <div className="flex space-x-2 flex-wrap gap-2">
               {subTabs.map((subTab) => {
                 const Icon = subTab.icon;
                 // Check if this is an agent tab (has an ID that matches a custom LLM)
@@ -252,13 +252,13 @@ const Navbar: React.FC<NavbarProps> = ({
                   >
                     <button
                       onClick={() => setActiveSubTab(subTab.id)}
-                      className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm transition-colors ${activeSubTab === subTab.id
-                        ? 'bg-gray-700 text-blue-400 border border-blue-500'
-                        : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                      className={`flex items-center space-x-2 px-4 py-2 rounded-2xl text-sm transition-all duration-250 ${activeSubTab === subTab.id
+                        ? 'glass text-mantle-300'
+                        : 'text-mantle-500 hover:bg-white/5 hover:text-mantle-400'
                         }`}
                     >
                       <Icon className="h-4 w-4" />
-                      <span>{subTab.label}</span>
+                      <span className="font-medium">{subTab.label}</span>
                     </button>
                     {isAgentTab && (
                       <div className="ml-1" onClick={(e) => e.stopPropagation()}>
@@ -272,7 +272,7 @@ const Navbar: React.FC<NavbarProps> = ({
               {activeTab === 'agents' && (
                 <button
                   onClick={() => setShowAddLLM(true)}
-                  className="flex items-center space-x-2 px-3 py-2 rounded-md text-sm transition-colors bg-blue-600 hover:bg-blue-700 text-white"
+                  className="btn-mantle-primary flex items-center space-x-2 px-4 py-2 text-sm"
                 >
                   <Plus className="h-4 w-4" />
                   <span>Add LLM</span>
@@ -286,23 +286,23 @@ const Navbar: React.FC<NavbarProps> = ({
       {/* Add LLM Modal */}
       {showAddLLM && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-gray-800 rounded-xl border border-gray-700 p-6 w-full max-w-md mx-4">
+          <div className="card-mantle p-8 w-full max-w-md mx-4">
             <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center space-x-2">
-                <Settings className="h-5 w-5 text-blue-400" />
-                <h2 className="text-xl font-semibold text-white">Add New LLM</h2>
+              <div className="flex items-center space-x-3">
+                <Settings className="h-6 w-6 text-mantle-400" />
+                <h2 className="heading-sm text-white">Add New LLM</h2>
               </div>
               <button
                 onClick={() => setShowAddLLM(false)}
-                className="p-1 hover:bg-gray-700 rounded transition-colors"
+                className="p-2 hover:bg-mantle-950 rounded-xl transition-colors"
               >
-                <X className="h-5 w-5 text-gray-400" />
+                <X className="h-5 w-5 text-mantle-500" />
               </button>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">
+                <label className="block text-sm font-medium text-mantle-300 mb-2">
                   Display Name
                 </label>
                 <input
@@ -310,15 +310,15 @@ const Navbar: React.FC<NavbarProps> = ({
                   value={newLLMName}
                   onChange={(e) => setNewLLMName(e.target.value)}
                   placeholder="e.g., Llama 3, Claude, Gemini Pro"
-                  className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border border-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                  className="input-mantle"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-mantle-500 mt-1">
                   This is the name that will appear in the UI
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">
+                <label className="block text-sm font-medium text-mantle-300 mb-2">
                   Model Name
                 </label>
                 <input
@@ -326,21 +326,21 @@ const Navbar: React.FC<NavbarProps> = ({
                   value={newLLMModel}
                   onChange={(e) => setNewLLMModel(e.target.value)}
                   placeholder="e.g., meta-llama/llama-3.3-70b-instruct:free"
-                  className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border border-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                  className="input-mantle"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-mantle-500 mt-1">
                   The exact model identifier from OpenRouter (optional - will use display name if not provided)
                 </p>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">
+                <label className="block text-sm font-medium text-mantle-300 mb-2">
                   Platform / Provider
                 </label>
                 <select
                   value={newLLMPlatform}
                   onChange={(e) => setNewLLMPlatform(e.target.value)}
-                  className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border border-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                  className="input-mantle"
                 >
                   <option value="">Select a platform</option>
                   {platforms.map(platform => (
@@ -350,7 +350,7 @@ const Navbar: React.FC<NavbarProps> = ({
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-400 mb-2">
+                <label className="block text-sm font-medium text-mantle-300 mb-2">
                   API Key
                 </label>
                 <input
@@ -358,16 +358,16 @@ const Navbar: React.FC<NavbarProps> = ({
                   value={newLLMApiKey}
                   onChange={(e) => setNewLLMApiKey(e.target.value)}
                   placeholder="sk-..."
-                  className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border border-gray-600 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
+                  className="input-mantle"
                 />
-                <p className="text-xs text-gray-500 mt-2">
+                <p className="text-xs text-mantle-500 mt-2">
                   Your API key is stored securely and never shared.
                 </p>
               </div>
 
-              <div className="bg-blue-600 bg-opacity-10 border border-blue-500 rounded-lg p-4">
-                <h4 className="text-blue-400 font-medium mb-2">Supported Platforms</h4>
-                <p className="text-sm text-gray-300">
+              <div className="card-mantle-dark p-4">
+                <h4 className="text-mantle-400 font-semibold mb-2">Supported Platforms</h4>
+                <p className="text-sm text-mantle-300">
                   We support any Openrouter.ai-compatible API endpoint. Enter your provider's API key to get started.
                 </p>
               </div>
@@ -375,14 +375,14 @@ const Navbar: React.FC<NavbarProps> = ({
               <div className="flex space-x-3 pt-4">
                 <button
                   onClick={() => setShowAddLLM(false)}
-                  className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-3 rounded-lg font-medium transition-colors"
+                  className="btn-mantle-secondary flex-1 py-3"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleAddLLM}
                   disabled={!newLLMName.trim() || !newLLMPlatform || !newLLMApiKey.trim() || isCreatingAgent}
-                  className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white py-3 rounded-lg font-medium transition-colors"
+                  className="btn-mantle-primary flex-1 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {isCreatingAgent ? 'Creating...' : 'Add LLM'}
                 </button>

@@ -213,14 +213,14 @@ const MainApp = () => {
   // If we're on a capsule detail page, render it without the tab navigation
   if (isCapsuleDetail) {
     return (
-      <div className="min-h-screen bg-gray-900">
+      <div className="min-h-screen bg-black">
         <CapsuleDetail />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-black">
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}

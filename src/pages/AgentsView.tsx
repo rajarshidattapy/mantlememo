@@ -449,7 +449,7 @@ const AgentsView: React.FC<AgentsViewProps> = ({ activeModel, customLLMs, onAddL
   // If no LLMs are available, show Add LLM prompt
   if (customLLMs.length === 0) {
     return (
-      <div className="min-h-screen bg-gray-900 p-8">
+      <div className="min-h-screen bg-black p-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center py-20">
             <Brain className="h-16 w-16 mx-auto mb-6 text-gray-600" />
@@ -464,7 +464,7 @@ const AgentsView: React.FC<AgentsViewProps> = ({ activeModel, customLLMs, onAddL
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 p-8">
+    <div className="min-h-screen bg-black p-8">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
             <div className="flex items-center space-x-4">
@@ -476,7 +476,7 @@ const AgentsView: React.FC<AgentsViewProps> = ({ activeModel, customLLMs, onAddL
                     value={editingLLMValue}
                     onChange={(e) => setEditingLLMValue(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleRenameLLM()}
-                    className="text-3xl font-bold bg-gray-800 text-white px-3 py-1 rounded border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="text-3xl font-bold bg-black text-white px-3 py-1 rounded border border-mantle-500 focus:outline-none focus:ring-2 focus:ring-mantle-500"
                     autoFocus
                   />
                   <button
@@ -491,7 +491,7 @@ const AgentsView: React.FC<AgentsViewProps> = ({ activeModel, customLLMs, onAddL
                       setEditingLLMName(null);
                       setEditingLLMValue('');
                     }}
-                    className="p-1 hover:bg-gray-700 rounded transition-colors text-gray-400 hover:text-white"
+                    className="p-1 hover:bg-mantle-950 rounded transition-colors text-mantle-500 hover:text-white"
                     title="Cancel"
                   >
                     <X className="h-5 w-5" />
@@ -508,7 +508,7 @@ const AgentsView: React.FC<AgentsViewProps> = ({ activeModel, customLLMs, onAddL
                         setEditingLLMName(activeModel);
                         setEditingLLMValue(getModelDisplayName(activeModel));
                       }}
-                      className="p-1 hover:bg-gray-700 rounded transition-colors text-gray-400 hover:text-blue-400"
+                      className="p-1 hover:bg-mantle-950 rounded transition-colors text-mantle-500 hover:text-mantle-400"
                       title="Rename LLM"
                     >
                       <Edit2 className="h-5 w-5" />
@@ -567,7 +567,7 @@ const AgentsView: React.FC<AgentsViewProps> = ({ activeModel, customLLMs, onAddL
             {currentChats.map((chat) => (
               <div
                 key={chat.id}
-                className="bg-gray-800 rounded-xl border border-gray-700 p-6 hover:border-gray-600 transition-colors"
+                className="bg-black rounded-xl border border-mantle-900 p-6 hover:border-mantle-800 transition-colors"
               >
                 <div className="flex items-start justify-between mb-4">
                   <div className="flex items-center space-x-2 flex-1">
@@ -579,7 +579,7 @@ const AgentsView: React.FC<AgentsViewProps> = ({ activeModel, customLLMs, onAddL
                           value={editingChatValue}
                           onChange={(e) => setEditingChatValue(e.target.value)}
                           onKeyPress={(e) => e.key === 'Enter' && handleRenameChat(chat.id)}
-                          className="flex-1 bg-gray-700 text-white px-2 py-1 rounded border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                          className="flex-1 bg-black text-white px-2 py-1 rounded border border-mantle-500 focus:outline-none focus:ring-2 focus:ring-mantle-500 text-sm"
                           autoFocus
                         />
                         <button
@@ -594,7 +594,7 @@ const AgentsView: React.FC<AgentsViewProps> = ({ activeModel, customLLMs, onAddL
                             setEditingChatId(null);
                             setEditingChatValue('');
                           }}
-                          className="p-1 hover:bg-gray-700 rounded transition-colors text-gray-400 hover:text-white"
+                          className="p-1 hover:bg-mantle-950 rounded transition-colors text-mantle-500 hover:text-white"
                           title="Cancel"
                         >
                           <X className="h-4 w-4" />
@@ -609,7 +609,7 @@ const AgentsView: React.FC<AgentsViewProps> = ({ activeModel, customLLMs, onAddL
                             setEditingChatId(chat.id);
                             setEditingChatValue(chat.name || getChatDisplayName(chat.id));
                           }}
-                          className="p-1 hover:bg-gray-700 rounded transition-colors text-gray-400 hover:text-blue-400"
+                          className="p-1 hover:bg-mantle-950 rounded transition-colors text-mantle-500 hover:text-mantle-400"
                           title="Rename chat"
                         >
                           <Edit2 className="h-3.5 w-3.5" />
@@ -642,7 +642,7 @@ const AgentsView: React.FC<AgentsViewProps> = ({ activeModel, customLLMs, onAddL
                   <div className="flex space-x-2">
                     <button 
                       onClick={() => handleContinueChat(chat.id)}
-                      className="flex-1 bg-gray-700 hover:bg-gray-600 text-white py-2 px-3 rounded text-sm transition-colors"
+                      className="flex-1 bg-mantle-900 hover:bg-mantle-800 text-white py-2 px-3 rounded text-sm transition-colors"
                     >
                       Continue Chat
                     </button>
