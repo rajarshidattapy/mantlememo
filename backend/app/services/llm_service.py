@@ -241,8 +241,8 @@ class LLMService:
                 headers={
                     "Authorization": f"Bearer {api_key}",
                     "Content-Type": "application/json",
-                    "HTTP-Referer": "https://solmind.ai",
-                    "X-Title": "SolMind"
+                    "HTTP-Referer": "https://Mantlememo.ai",
+                    "X-Title": "Mantlememo"
                 },
                 json={
                     "model": model,

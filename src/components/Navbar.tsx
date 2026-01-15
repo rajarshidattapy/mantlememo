@@ -27,14 +27,14 @@ interface NavbarProps {
 const BalanceDisplay = () => {
   const { balance, loading } = useSolanaBalance();
   const { connected } = useWallet();
-  
+
   // Log balance changes for debugging
   useEffect(() => {
     if (balance !== null && balance !== undefined) {
       console.log('BalanceDisplay: balance changed to', balance);
     }
   }, [balance]);
-  
+
   // Format balance with appropriate decimal places
   const formatBalance = (bal: number | null): string => {
     if (bal === null || bal === undefined) return '0';
@@ -46,7 +46,7 @@ const BalanceDisplay = () => {
       return bal.toFixed(5);
     }
   };
-  
+
   return (
     <div className="bg-gray-900 rounded-lg px-4 py-2 border border-gray-600">
       <div className="text-sm text-gray-400">Balance</div>
@@ -57,10 +57,10 @@ const BalanceDisplay = () => {
   );
 };
 
-const Navbar: React.FC<NavbarProps> = ({ 
-  activeTab, 
-  setActiveTab, 
-  activeSubTab, 
+const Navbar: React.FC<NavbarProps> = ({
+  activeTab,
+  setActiveTab,
+  activeSubTab,
   setActiveSubTab,
   customLLMs,
   onAddLLM
@@ -115,14 +115,14 @@ const Navbar: React.FC<NavbarProps> = ({
 
       // Add to local state
       onAddLLM(newLLM);
-      
+
       // Clear form
       setNewLLMName('');
       setNewLLMModel('');
       setNewLLMPlatform('');
       setNewLLMApiKey('');
       setShowAddLLM(false);
-      
+
       console.log('Agent created successfully:', createdAgent.id);
     } catch (error) {
       console.error('Error creating agent:', error);
@@ -138,7 +138,7 @@ const Navbar: React.FC<NavbarProps> = ({
         // Filter out any GPT or Mistral agents (but not substrings like "devstral")
         // Allow specific exception: 'openai/gpt-oss-120b:free'
         const ALLOWED_MODELS = ['openai/gpt-oss-120b:free'];
-        
+
         const isGPTOrMistral = (str: string): boolean => {
           const lower = str.toLowerCase();
           // Allow specific models
@@ -147,19 +147,19 @@ const Navbar: React.FC<NavbarProps> = ({
           }
           // Check for exact matches or common patterns
           return lower === 'gpt' || lower === 'mistral' ||
-                 /^gpt[-_\s]/.test(lower) || /[-_\s]gpt[-_\s]/.test(lower) || /[-_\s]gpt$/.test(lower) ||
-                 /^mistral[-_\s]/.test(lower) || /[-_\s]mistral[-_\s]/.test(lower) || /[-_\s]mistral$/.test(lower);
+            /^gpt[-_\s]/.test(lower) || /[-_\s]gpt[-_\s]/.test(lower) || /[-_\s]gpt$/.test(lower) ||
+            /^mistral[-_\s]/.test(lower) || /[-_\s]mistral[-_\s]/.test(lower) || /[-_\s]mistral$/.test(lower);
         };
-        
+
         const customAgents = customLLMs
           .filter(llm => {
             const id = (llm.id || '').toLowerCase();
             const name = (llm.name || '').toLowerCase();
             const displayName = (llm.displayName || '').toLowerCase();
             // Check if this is an allowed model
-            const isAllowed = ALLOWED_MODELS.some(allowed => 
-              id.includes(allowed.toLowerCase()) || 
-              name.includes(allowed.toLowerCase()) || 
+            const isAllowed = ALLOWED_MODELS.some(allowed =>
+              id.includes(allowed.toLowerCase()) ||
+              name.includes(allowed.toLowerCase()) ||
               displayName.includes(allowed.toLowerCase())
             );
             if (isAllowed) return true;
@@ -203,10 +203,10 @@ const Navbar: React.FC<NavbarProps> = ({
               >
                 <ArrowLeft className="h-6 w-6 text-gray-400 hover:text-blue-400" />
               </Link>
-              <img src={appLogo} alt="SolMind" className="h-8 w-8" />
-              <span className="text-xl font-bold text-white">SolMind</span>
+              <img src={appLogo} alt="Mantlememo" className="h-8 w-8" />
+              <span className="text-xl font-bold text-white">Mantlememo</span>
             </div>
-            
+
             <div className="flex items-center space-x-1">
               {mainTabs.map((tab) => {
                 const Icon = tab.icon;
@@ -221,11 +221,10 @@ const Navbar: React.FC<NavbarProps> = ({
                         setActiveSubTab(defaultSubTabs[0].id);
                       }
                     }}
-                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
-                      activeTab === tab.id
+                    className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${activeTab === tab.id
                         ? 'bg-blue-600 text-white'
                         : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                    }`}
+                      }`}
                   >
                     <Icon className="h-5 w-5" />
                     <span className="font-medium">{tab.label}</span>
@@ -253,11 +252,10 @@ const Navbar: React.FC<NavbarProps> = ({
                   >
                     <button
                       onClick={() => setActiveSubTab(subTab.id)}
-                      className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm transition-colors ${
-                        activeSubTab === subTab.id
+                      className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm transition-colors ${activeSubTab === subTab.id
                           ? 'bg-gray-700 text-blue-400 border border-blue-500'
                           : 'text-gray-400 hover:bg-gray-700 hover:text-white'
-                      }`}
+                        }`}
                     >
                       <Icon className="h-4 w-4" />
                       <span>{subTab.label}</span>
@@ -294,7 +292,7 @@ const Navbar: React.FC<NavbarProps> = ({
                 <Settings className="h-5 w-5 text-blue-400" />
                 <h2 className="text-xl font-semibold text-white">Add New LLM</h2>
               </div>
-              <button 
+              <button
                 onClick={() => setShowAddLLM(false)}
                 className="p-1 hover:bg-gray-700 rounded transition-colors"
               >

@@ -97,10 +97,10 @@ export const storage = {
  * Storage keys used throughout the application
  */
 export const STORAGE_KEYS = {
-  ACTIVE_TAB: 'solmind_activeTab',
-  ACTIVE_SUB_TAB: 'solmind_activeSubTab',
-  ACTIVE_VIEW: 'solmind_activeView',
-  SELECTED_CHAT_ID: 'solmind_selectedChatId',
-  USER_PREFERENCES: 'solmind_userPreferences',
+  ACTIVE_TAB: 'mantlememo_activeTab',
+  ACTIVE_SUB_TAB: 'mantlememo_activeSubTab',
+  ACTIVE_VIEW: 'mantlememo_activeView',
+  SELECTED_CHAT_ID: 'mantlememo_selectedChatId',
+  USER_PREFERENCES: 'mantlememo_userPreferences',
 } as const;
 

@@ -25,7 +25,7 @@ const Staking = () => {
   const { publicKey, connected, signTransaction } = useWallet();
   const { connection } = useConnection();
   const apiClient = useApiClient();
-  
+
   const [agents, setAgents] = useState<Agent[]>([]);
   const [loadingAgents, setLoadingAgents] = useState(true);
   const [stakingInfo, setStakingInfo] = useState<Record<string, StakingInfo>>({});
@@ -93,7 +93,7 @@ const Staking = () => {
       // The actual SOL amount is sent to the staking pool (currently placeholder)
       // TODO: Replace with actual staking pool PDA derived from capsule_id using the Solana staking program
       const STAKING_POOL_ADDRESS = publicKey.toBase58(); // Placeholder - will be replaced with actual pool
-      
+
       // Send SOL payment transaction (this will trigger wallet popup)
       let paymentResult;
       try {
@@ -129,10 +129,10 @@ const Staking = () => {
       // Refresh data
       await fetchStakingInfo();
       await fetchAgents();
-      
+
       // Clear stake amount input
       setStakeAmounts(prev => ({ ...prev, [agentId]: '' }));
-      
+
       // Store staked capsule info in localStorage for immediate marketplace display
       // This ensures the marketplace shows the staked agent even if backend has delays
       try {
@@ -151,22 +151,22 @@ const Staking = () => {
           agent_id: agentId,
           staked_at: new Date().toISOString()
         };
-        
+
         // Get existing staked capsules from localStorage
         const existingStaked = JSON.parse(localStorage.getItem('staked_capsules') || '[]');
         // Add new staked capsule (avoid duplicates by agent_id)
         const filtered = existingStaked.filter((c: any) => c.agent_id !== agentId);
         filtered.push(stakedCapsule);
         localStorage.setItem('staked_capsules', JSON.stringify(filtered));
-        
+
         // Trigger custom event to notify marketplace to refresh
         window.dispatchEvent(new CustomEvent('capsuleStaked', { detail: stakedCapsule }));
-        
+
         console.log('Staked capsule stored in localStorage:', stakedCapsule);
       } catch (err) {
         console.error('Error storing staked capsule:', err);
       }
-      
+
       // Note: Balance will decrease slightly due to transaction fees
       // The actual SOL is sent to the staking pool (currently a placeholder address)
       alert(`Successfully staked ${amount} SOL on ${agentName}!\n\nTransaction: ${paymentResult.signature}\n\nYour agent is now available in the Marketplace!`);
@@ -246,7 +246,7 @@ const Staking = () => {
               <TrendingUp className="h-5 w-5 text-green-400" />
               <span className="text-gray-400">Platform</span>
             </div>
-            <div className="text-2xl font-bold text-white">SolMind</div>
+            <div className="text-2xl font-bold text-white">Mantlememo</div>
             <div className="text-sm text-gray-400">Marketplace</div>
           </div>
         </div>
@@ -254,7 +254,7 @@ const Staking = () => {
         {/* My Agents for Staking */}
         <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
           <h2 className="text-xl font-semibold text-white mb-6">My Agents</h2>
-          
+
           {loadingAgents ? (
             <div className="text-center py-12">
               <Loader2 className="h-8 w-8 text-blue-400 mx-auto mb-4 animate-spin" />
@@ -271,10 +271,10 @@ const Staking = () => {
               {agents.map((agent) => {
                 const isStaking = loadingStaking[agent.id];
                 const stakeAmount = stakeAmounts[agent.id] || '';
-                const existingStake = Object.values(stakingInfo).find(s => 
+                const existingStake = Object.values(stakingInfo).find(s =>
                   s.capsule_id.includes(agent.id) || s.wallet_address === publicKey?.toBase58()
                 );
-                
+
                 return (
                   <div key={agent.id} className="bg-gray-700 rounded-lg p-4">
                     <div className="flex justify-between items-start mb-4">
@@ -290,7 +290,7 @@ const Staking = () => {
                         )}
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-2 mb-3">
                       <input
                         type="number"

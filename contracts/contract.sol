@@ -7,7 +7,7 @@ Deployed contract adress: contract address=0x4287F8a28AC24FF1b0723D26747CBE7F39C
 */
 
 /**
- * @title SolMind
+ * @title Mantlememo
  * @notice A decentralized marketplace for AI Agents and Memory Capsules.
  * @dev This contract handles:
  * 1. Registry: Creating Agents and Capsules.
@@ -15,7 +15,7 @@ Deployed contract adress: contract address=0x4287F8a28AC24FF1b0723D26747CBE7F39C
  * 3. Marketplace: Users paying ETH/MNT to query capsules.
  * 4. Accounting: Tracking earnings and allowing withdrawals.
  */
-contract SolMind {
+contract Mantlememo {
     // ============================================================================
     // 1. CONSTANTS & CONFIGURATION
     // ============================================================================

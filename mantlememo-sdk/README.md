@@ -1,6 +1,6 @@
-# SolMind Python SDK
+# Mantlememo Python SDK
 
-Python SDK for interacting with the SolMind API.
+Python SDK for interacting with the Mantlememo API.
 
 ## Installation
 
@@ -19,13 +19,13 @@ pip install .
 ## Usage
 
 ```python
-from solmind import Agent
+from mantlememo import Agent
 
 # Initialize agent with wallet address for authentication
 agent = Agent(
     agent_id="your-agent-id",
     chat_id="your-chat-id",
-    wallet_address="YourSolanaWalletAddress",
+    wallet_address="YourMantleWalletAddress",
     base_url="http://localhost:8000"  # Optional: defaults to localhost:8000
 )
 
