@@ -1,4 +1,4 @@
-class SolmindError(Exception):
+class MantlememoError(Exception):
     pass
 
 

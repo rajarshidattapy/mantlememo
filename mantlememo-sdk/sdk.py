@@ -2,10 +2,10 @@ from mantlememo import Agent
 
 # Initialize agent with wallet address for authentication
 agent = Agent(
-    agent_id="custom-fd3d5329",
-    chat_id="c5b4f20a-e387-4068-8815-80cdc1da618d",
-    wallet_address="AmfxkopBWbsF5qgQDCica6jGQ3NyMDhcLqcoRFzJodfJ",
-    base_url="localhost:8000"  # Optional: defaults to localhost:8000
+    agent_id="custom-a29ae9f0",
+    chat_id="d8de5399-424b-4a48-864f-146a7628c130",
+    wallet_address="0x90df1528054FFccA5faE38EC6447f1557168620E",
+    base_url="http://localhost:8000"  # Optional: defaults to http://localhost:8000
 )
 
 # Send a message to the agent
