@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Brain, Store, Wallet, Settings, MessageSquare, Coins, TrendingUp, ArrowLeft, Plus, X } from 'lucide-react';
-import { useSolanaBalance } from '../hooks/useSolanaBalance';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useMantleBalance } from '../hooks/useMantleBalance';
+import { useWallet } from '../contexts/WalletContextProvider';
 import { useApiClient } from '../lib/api';
-import appLogo from '../assets/app-logo.png';
+import appLogo from '../assets/logo.png';
 import InfoIcon from './InfoIcon';
 
 interface LLMConfig {
@@ -25,7 +25,7 @@ interface NavbarProps {
 }
 
 const BalanceDisplay = () => {
-  const { balance, loading } = useSolanaBalance();
+  const { balance, loading } = useMantleBalance();
   const { connected } = useWallet();
 
   // Log balance changes for debugging
@@ -51,7 +51,7 @@ const BalanceDisplay = () => {
     <div className="bg-gray-900 rounded-lg px-4 py-2 border border-gray-600">
       <div className="text-sm text-gray-400">Balance</div>
       <div className="text-lg font-semibold text-white" key={balance}>
-        {loading ? '...' : connected ? `${formatBalance(balance)} SOL` : 'N/A'}
+        {loading ? '...' : connected ? `${formatBalance(balance)} MNT` : 'N/A'}
       </div>
     </div>
   );
@@ -222,8 +222,8 @@ const Navbar: React.FC<NavbarProps> = ({
                       }
                     }}
                     className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${activeTab === tab.id
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                      ? 'bg-blue-600 text-white'
+                      : 'text-gray-300 hover:bg-gray-700 hover:text-white'
                       }`}
                   >
                     <Icon className="h-5 w-5" />
@@ -253,8 +253,8 @@ const Navbar: React.FC<NavbarProps> = ({
                     <button
                       onClick={() => setActiveSubTab(subTab.id)}
                       className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm transition-colors ${activeSubTab === subTab.id
-                          ? 'bg-gray-700 text-blue-400 border border-blue-500'
-                          : 'text-gray-400 hover:bg-gray-700 hover:text-white'
+                        ? 'bg-gray-700 text-blue-400 border border-blue-500'
+                        : 'text-gray-400 hover:bg-gray-700 hover:text-white'
                         }`}
                     >
                       <Icon className="h-4 w-4" />

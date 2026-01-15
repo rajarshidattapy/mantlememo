@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { useWallet } from '@solana/wallet-adapter-react';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { useWallet } from '../contexts/WalletContextProvider';
 import {
   MessageSquare,
   Package,
@@ -14,13 +13,13 @@ import {
   Github,
   ExternalLink,
 } from "lucide-react";
-import solanaLogo from "../assets/solana-logo.png";
-import appLogo from "../assets/app-logo.png";
-import { useSolanaBalance } from "../hooks/useSolanaBalance";
+import mantleLogo from "../assets/logo.png";
+import appLogo from "../assets/logo.png";
+import { useMantleBalance } from "../hooks/useMantleBalance";
 
 export default function LandingPage() {
-  const { connected, publicKey, disconnect } = useWallet();
-  const { balance, loading } = useSolanaBalance();
+  const { connected, address, disconnect, connect } = useWallet();
+  const { balance, loading } = useMantleBalance();
   const [showDisconnect, setShowDisconnect] = useState(false);
   const disconnectRef = useRef<HTMLDivElement>(null);
 
@@ -65,12 +64,12 @@ export default function LandingPage() {
             </Link>
           </nav>
           <div className="flex items-center gap-4">
-            {connected && publicKey ? (
+            {connected && address ? (
               <div className="flex items-center gap-3">
                 <div className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 flex items-center gap-2">
-                  <img src={solanaLogo} alt="SOL" className="w-4 h-4" />
+                  <img src={mantleLogo} alt="MNT" className="w-4 h-4" />
                   <span className="text-sm font-medium text-white">
-                    {loading ? '...' : `${balance?.toFixed(4) ?? '0'} SOL`}
+                    {loading ? '...' : `${balance?.toFixed(4) ?? '0'} MNT`}
                   </span>
                 </div>
                 <div className="relative" ref={disconnectRef}>
@@ -78,7 +77,7 @@ export default function LandingPage() {
                     onClick={() => setShowDisconnect(!showDisconnect)}
                     className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
                   >
-                    {shortenAddress(publicKey.toBase58())}
+                    {shortenAddress(address)}
                   </button>
                   {showDisconnect && (
                     <div className="absolute top-full right-0 mt-1 z-50">
@@ -96,7 +95,12 @@ export default function LandingPage() {
                 </div>
               </div>
             ) : (
-              <WalletMultiButton className="!bg-blue-600 hover:!bg-blue-700 !text-white !px-4 !py-2 !rounded-lg !text-sm !font-medium !transition-colors !h-auto" />
+              <button
+                onClick={connect}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg text-sm font-medium transition-colors"
+              >
+                Connect MetaMask
+              </button>
             )}
           </div>
         </div>
@@ -105,14 +109,14 @@ export default function LandingPage() {
       <main className="pt-32 pb-20">
         <section className="container mx-auto px-6 text-center mb-32">
           <div className="inline-flex items-center gap-2 mb-6 py-1 px-3 border border-blue-600/20 bg-blue-600/5 text-blue-400 rounded-full text-sm">
-            <img src={solanaLogo} alt="Solana" className="w-4 h-4" />
-            v1 live on Solana testnet
+            <img src={mantleLogo} alt="Mantle" className="w-4 h-4" />
+            v1 live on Mantle Sepolia testnet
           </div>
           <h1 className="text-5xl md:text-7xl font-bold tracking-tighter mb-8 max-w-4xl mx-auto leading-tight">
             Turn AI conversations into <span className="text-blue-400">on-chain intelligence.</span>
           </h1>
           <p className="text-xl text-gray-400 mb-10 max-w-2xl mx-auto">
-            Mantlememo is a Solana-native AI intelligence marketplace. Chat with agents, package long-term intelligence
+            Mantlememo is a Mantle-native AI intelligence marketplace. Chat with agents, package long-term intelligence
             into capsules, and monetize them as revenue-generating assets.
           </p>
           <div className="flex flex-row items-center justify-center gap-6 mt-8">
@@ -124,7 +128,12 @@ export default function LandingPage() {
                 Enter App
               </Link>
             ) : (
-              <WalletMultiButton className="!bg-white !text-blue-600 !font-medium !px-8 !py-3 !rounded-md !shadow hover:!bg-blue-50 !transition-colors !border !border-white focus:!outline-none focus:!ring-2 focus:!ring-blue-300 !h-auto" />
+              <button
+                onClick={connect}
+                className="bg-white text-blue-600 font-medium px-8 py-3 rounded-md shadow hover:bg-blue-50 transition-colors border border-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+              >
+                Connect MetaMask
+              </button>
             )}
             <Link
               to="/marketplace"

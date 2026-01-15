@@ -33,12 +33,20 @@ response = agent.chat("Analyze proposal X")
 
 ## Architecture
 
-* **Frontend**: React
+* **Frontend**: React with MetaMask integration
 * **Runtime**: FastAPI
 * **Chats & Messages**: Redis
 * **Agents & Capsules**: PostgreSQL
 * **Semantic Memory**: mem0 (off-chain)
-* **Coordination Layer**: Mantle
+* **Coordination Layer**: Mantle (EVM)
+
+## Wallet & Payments
+
+* **Wallet**: MetaMask (EVM-compatible)
+* **Network**: Mantle Sepolia Testnet (Chain ID: 5003)
+* **Token**: MNT (native gas token)
+* **RPC**: https://rpc.sepolia.mantle.xyz
+* **Explorer**: https://explorer.sepolia.mantle.xyz
 
 ## What MantleMemo is NOT
 
@@ -49,5 +57,5 @@ response = agent.chat("Analyze proposal X")
 
 ## Status
 
-MVP live with SDK-based access to persistent agent intelligence.
+MVP live with SDK-based access to persistent agent intelligence on Mantle Sepolia Testnet.
 

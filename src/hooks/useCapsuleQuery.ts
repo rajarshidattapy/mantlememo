@@ -1,18 +1,17 @@
 import { useState } from 'react';
-import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { useWallet } from '../contexts/WalletContextProvider';
 import { useApiClient } from '../lib/api';
-import { sendPayment, PaymentResult } from '../utils/solanaPayment';
+import { sendPayment, PaymentResult } from '../utils/mantlePayment';
 
 export interface QueryResult {
   response: string;
   capsule_id: string;
   price_paid: number;
-  txSignature?: string;
+  txHash?: string;
 }
 
 export function useCapsuleQuery() {
-  const { connection } = useConnection();
-  const { publicKey, signTransaction } = useWallet();
+  const { signer } = useWallet();
   const apiClient = useApiClient();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -23,7 +22,7 @@ export function useCapsuleQuery() {
     creatorWallet: string,
     pricePerQuery: number
   ): Promise<QueryResult | null> => {
-    if (!publicKey || !signTransaction) {
+    if (!signer) {
       setError('Wallet not connected. Please connect your wallet first.');
       return null;
     }
@@ -37,35 +36,33 @@ export function useCapsuleQuery() {
     setError(null);
 
     try {
-      let paymentSignature: string | undefined;
+      let paymentHash: string | undefined;
 
       // Send payment if price > 0
       if (pricePerQuery > 0) {
         const paymentResult: PaymentResult = await sendPayment(
-          connection,
-          publicKey,
+          signer,
           creatorWallet,
-          pricePerQuery,
-          signTransaction
+          pricePerQuery
         );
 
         if (!paymentResult.success) {
           throw new Error(paymentResult.error || 'Payment failed');
         }
 
-        paymentSignature = paymentResult.signature;
+        paymentHash = paymentResult.hash;
       }
 
       // Query capsule with payment proof
       const response = await apiClient.queryCapsule(capsuleId, {
         prompt,
-        payment_signature: paymentSignature,
+        payment_signature: paymentHash,
         amount_paid: pricePerQuery,
       });
 
       return {
         ...response,
-        txSignature: paymentSignature
+        txHash: paymentHash
       };
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Query failed';

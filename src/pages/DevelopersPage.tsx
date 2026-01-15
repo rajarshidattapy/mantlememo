@@ -13,7 +13,7 @@ import {
   BookOpen,
   Zap
 } from 'lucide-react';
-import appLogo from '../assets/app-logo.png';
+import appLogo from '../assets/logo.png';
 
 export default function DevelopersPage() {
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
@@ -237,7 +237,7 @@ print(response)`;
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-blue-400 mt-1">•</span>
-                    <span>Solana wallet authentication</span>
+                    <span>Mantle wallet authentication</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-blue-400 mt-1">•</span>
@@ -262,7 +262,7 @@ print(response)`;
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-blue-400 mt-1">•</span>
-                    <span>Solana wallet address</span>
+                    <span>Mantle wallet address</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <span className="text-blue-400 mt-1">•</span>

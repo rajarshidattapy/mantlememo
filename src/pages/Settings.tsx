@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Settings as SettingsIcon } from 'lucide-react';
 import { useApiClient } from '../lib/api';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useWallet } from '../contexts/WalletContextProvider';
 
 const Settings = () => {
   const [defaultModel, setDefaultModel] = useState('default');

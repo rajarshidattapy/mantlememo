@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { TrendingUp, Users, Calendar, ArrowUpRight, ExternalLink } from 'lucide-react';
-import { useSolanaBalance } from '../hooks/useSolanaBalance';
-import { useWallet } from '@solana/wallet-adapter-react';
-import solanaLogo from '../assets/solana-logo.png';
+import { useMantleBalance } from '../hooks/useMantleBalance';
+import { useWallet } from '../contexts/WalletContextProvider';
+import mantleLogo from '../assets/logo.png';
 
 const EarningsDashboard = () => {
   const [timeRange, setTimeRange] = useState<'7d' | '30d' | '90d' | '1y'>('30d');
-  const { balance, loading } = useSolanaBalance();
-  const { connected, publicKey } = useWallet();
+  const { balance, loading } = useMantleBalance();
+  const { connected, address } = useWallet();
 
   const shortenAddress = (address: string) => {
     return `${address.slice(0, 6)}...${address.slice(-4)}`;
@@ -64,7 +64,7 @@ const EarningsDashboard = () => {
           <div>
             <h1 className="text-3xl font-bold text-white mb-2">Earnings Dashboard</h1>
             <p className="text-gray-400">
-              {connected && publicKey ? shortenAddress(publicKey.toBase58()) : 'Connect wallet to view earnings'}
+              {connected && address ? shortenAddress(address) : 'Connect wallet to view earnings'}
             </p>
           </div>
           
@@ -89,11 +89,11 @@ const EarningsDashboard = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <div className="bg-gray-800 rounded-xl border border-gray-700 p-6">
             <div className="flex items-center space-x-2 mb-3">
-              <img src={solanaLogo} alt="SOL" className="h-5 w-5" />
+              <img src={mantleLogo} alt="MNT" className="h-5 w-5" />
               <span className="text-gray-400">Wallet Balance</span>
             </div>
             <div className="text-2xl font-bold text-white">
-              {loading ? '...' : connected ? `${balance?.toFixed(4) ?? '0'} SOL` : 'N/A'}
+              {loading ? '...' : connected ? `${balance?.toFixed(4) ?? '0'} MNT` : 'N/A'}
             </div>
             <div className="text-sm text-gray-400">{connected ? 'Connected' : 'Not connected'}</div>
           </div>
@@ -103,7 +103,7 @@ const EarningsDashboard = () => {
               <Calendar className="h-5 w-5 text-blue-400" />
               <span className="text-gray-400">Capsule Earnings</span>
             </div>
-            <div className="text-2xl font-bold text-white">{earningsData.thisMonth} SOL</div>
+            <div className="text-2xl font-bold text-white">{earningsData.thisMonth} MNT</div>
             <div className="text-sm text-gray-400">This month</div>
           </div>
 
@@ -122,21 +122,21 @@ const EarningsDashboard = () => {
               <span className="text-gray-400">Avg Revenue</span>
             </div>
             <div className="text-2xl font-bold text-white">0.00</div>
-            <div className="text-sm text-gray-400">SOL per query</div>
+            <div className="text-sm text-gray-400">MNT per query</div>
           </div>
         </div>
 
         {/* View on Explorer */}
-        {connected && publicKey && (
+        {connected && address && (
           <div className="mb-8">
             <a 
-              href={`https://explorer.solana.com/address/${publicKey.toBase58()}?cluster=devnet`}
+              href={`https://explorer.sepolia.mantle.xyz/address/${address}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center text-blue-400 hover:text-blue-300 transition-colors"
             >
               <ExternalLink className="h-4 w-4 mr-2" />
-              View full transaction history on Solana Explorer
+              View full transaction history on Mantle Explorer
             </a>
           </div>
         )}
@@ -211,7 +211,7 @@ const EarningsDashboard = () => {
                       </div>
                     </td>
                     <td className="text-right py-3 text-white">{capsule.queries}</td>
-                    <td className="text-right py-3 text-green-400 font-semibold">{capsule.revenue} SOL</td>
+                    <td className="text-right py-3 text-green-400 font-semibold">{capsule.revenue} MNT</td>
                     <td className="text-right py-3">
                       <span className={`flex items-center justify-end space-x-1 ${
                         capsule.trend > 0 ? 'text-green-400' : 'text-red-400'

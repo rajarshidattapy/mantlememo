@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Star, User, TrendingUp, MessageSquare, Play, ExternalLink, AlertCircle } from 'lucide-react';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useWallet } from '../contexts/WalletContextProvider';
 import { useApiClient } from '../lib/api';
 import { useCapsuleQuery } from '../hooks/useCapsuleQuery';
-import { getSolanaExplorerUrl } from '../utils/solanaPayment';
+import { getMantleExplorerUrl } from '../utils/mantlePayment';
 
 const CapsuleDetail = () => {
   const { id } = useParams();
@@ -87,7 +87,7 @@ const CapsuleDetail = () => {
 
     if (result) {
       setQueryResponse(result.response);
-      setTxSignature(result.txSignature || null);
+      setTxSignature(result.txHash || null);
       setQuestion('');
     }
   };
@@ -173,7 +173,7 @@ const CapsuleDetail = () => {
 
             <div className="text-right">
               
-              <div className="text-2xl font-bold text-white mb-1">{capsule.price_per_query} SOL</div>
+              <div className="text-2xl font-bold text-white mb-1">{capsule.price_per_query} MNT</div>
               <div className="text-gray-400">per query</div>
               <div className="mt-4 space-x-3">
                 <button
@@ -197,7 +197,7 @@ const CapsuleDetail = () => {
             {capsule.stake_amount !== undefined && (
               <div className="bg-gray-700 rounded-lg p-4 text-center">
                 <div className="text-2xl font-bold text-green-400">{capsule.stake_amount}</div>
-                <div className="text-sm text-gray-400">SOL Staked</div>
+                <div className="text-sm text-gray-400">MNT Staked</div>
               </div>
             )}
             {capsule.query_count !== undefined && (
@@ -307,7 +307,7 @@ const CapsuleDetail = () => {
                       <h4 className="text-blue-400 font-semibold">Response:</h4>
                       {txSignature && (
                         <a
-                          href={getSolanaExplorerUrl(txSignature, 'devnet')}
+                          href={getMantleExplorerUrl(txSignature)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="flex items-center text-sm text-blue-400 hover:text-blue-300"

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Search, Star, TrendingUp, ShoppingCart, Loader2, AlertCircle, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useWallet, useConnection } from '@solana/wallet-adapter-react';
+import { useWallet } from '../contexts/WalletContextProvider';
 import { useApiClient } from '../lib/api';
-import { sendPayment } from '../utils/solanaPayment';
+import { sendPayment } from '../utils/mantlePayment';
 
 interface MarketplaceCapsule {
   id: string;
@@ -21,8 +21,7 @@ interface MarketplaceCapsule {
 const Marketplace = () => {
   const apiClient = useApiClient();
   const navigate = useNavigate();
-  const { publicKey, connected, signTransaction } = useWallet();
-  const { connection } = useConnection();
+  const { address, connected, signer } = useWallet();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [sortBy, setSortBy] = useState('popular');
@@ -156,7 +155,7 @@ const Marketplace = () => {
   };
 
   const handleBuy = async (capsule: MarketplaceCapsule) => {
-    if (!connected || !publicKey || !signTransaction) {
+    if (!connected || !address || !signer) {
       alert('Please connect your wallet to purchase this capsule');
       return;
     }
@@ -166,13 +165,11 @@ const Marketplace = () => {
     setPurchaseSuccess(null);
 
     try {
-      // Send 0.22 SOL payment to the creator
+      // Send 0.22 MNT payment to the creator
       const paymentResult = await sendPayment(
-        connection,
-        publicKey,
+        signer,
         capsule.creator_wallet,
-        0.22, // Fixed price: 0.22 SOL
-        signTransaction
+        0.22 // Fixed price: 0.22 MNT
       );
 
       if (!paymentResult.success) {
@@ -183,7 +180,7 @@ const Marketplace = () => {
       setPurchaseSuccess(capsule.id);
       
       // Show success alert
-      alert(`Successfully purchased ${capsule.name}!\n\nTransaction: ${paymentResult.signature}\n\nYou can now access this chat.`);
+      alert(`Successfully purchased ${capsule.name}!\n\nTransaction: ${paymentResult.hash}\n\nYou can now access this chat.`);
       
       // Navigate to capsule detail page after a short delay
       setTimeout(() => {
@@ -314,7 +311,7 @@ const Marketplace = () => {
                   <div className="grid grid-cols-3 gap-3 mb-4 text-xs">
                     <div className="bg-gray-700 rounded p-2 text-center">
                       <div className="text-green-400 font-semibold">{capsule.stake_amount.toFixed(1)}</div>
-                      <div className="text-gray-400">SOL Staked</div>
+                      <div className="text-gray-400">MNT Staked</div>
                     </div>
                     <div className="bg-gray-700 rounded p-2 text-center">
                       <div className="text-blue-400 font-semibold">{capsule.query_count}</div>
@@ -322,7 +319,7 @@ const Marketplace = () => {
                     </div>
                     <div className="bg-gray-700 rounded p-2 text-center">
                       <div className="text-purple-400 font-semibold">{capsule.price_per_query.toFixed(3)}</div>
-                      <div className="text-gray-400">SOL/query</div>
+                      <div className="text-gray-400">MNT/query</div>
                     </div>
                   </div>
 

@@ -7,7 +7,7 @@ import WalletView from './WalletView';
 import Settings from './Settings';
 import CapsuleDetail from './CapsuleDetail';
 import { useApiClient } from '../lib/api';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useWallet } from '../contexts/WalletContextProvider';
 
 interface LLMConfig {
   id: string;

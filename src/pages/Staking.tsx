@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { TrendingUp, Shield, Star, Coins, Plus, AlertCircle, Loader2 } from 'lucide-react';
-import { useWallet, useConnection } from '@solana/wallet-adapter-react';
+import { useWallet } from '../contexts/WalletContextProvider';
 import { useApiClient } from '../lib/api';
-import { sendPayment } from '../utils/solanaPayment';
+import { sendPayment } from '../utils/mantlePayment';
 
 interface Agent {
   id: string;
@@ -22,8 +22,7 @@ interface StakingInfo {
 }
 
 const Staking = () => {
-  const { publicKey, connected, signTransaction } = useWallet();
-  const { connection } = useConnection();
+  const { address, connected, signer } = useWallet();
   const apiClient = useApiClient();
 
   const [agents, setAgents] = useState<Agent[]>([]);
@@ -35,11 +34,11 @@ const Staking = () => {
 
   // Fetch user's agents
   useEffect(() => {
-    if (connected && publicKey) {
+    if (connected && address) {
       fetchAgents();
       fetchStakingInfo();
     }
-  }, [connected, publicKey]);
+  }, [connected, address]);
 
   const fetchAgents = async () => {
     try {
@@ -70,7 +69,7 @@ const Staking = () => {
   };
 
   const handleStake = async (agentId: string, agentName: string) => {
-    if (!connected || !publicKey || !signTransaction) {
+    if (!connected || !address || !signer) {
       setError('Please connect your wallet first');
       return;
     }
@@ -87,28 +86,23 @@ const Staking = () => {
     setError(null);
 
     try {
-      // For staking, we need to send SOL to a staking pool
-      // For now, we'll use a placeholder address - in production this should be a proper staking pool PDA
-      // IMPORTANT: The balance will decrease due to transaction fees (~0.000005 SOL)
-      // The actual SOL amount is sent to the staking pool (currently placeholder)
-      // TODO: Replace with actual staking pool PDA derived from capsule_id using the Solana staking program
-      const STAKING_POOL_ADDRESS = publicKey.toBase58(); // Placeholder - will be replaced with actual pool
+      // For staking, we need to send MNT to a staking pool
+      // For now, we'll use a placeholder address - in production this should be a proper staking contract
+      const STAKING_POOL_ADDRESS = address; // Placeholder - will be replaced with actual contract
 
-      // Send SOL payment transaction (this will trigger wallet popup)
+      // Send MNT payment transaction (this will trigger wallet popup)
       let paymentResult;
       try {
         paymentResult = await sendPayment(
-          connection,
-          publicKey,
+          signer,
           STAKING_POOL_ADDRESS,
-          amount,
-          signTransaction
+          amount
         );
       } catch (paymentError) {
         // Handle wallet extension errors
         const errorMsg = paymentError instanceof Error ? paymentError.message : 'Payment failed';
-        if (errorMsg.includes('channel closed') || errorMsg.includes('message channel')) {
-          throw new Error('Wallet connection was interrupted. Please try again and keep the wallet popup open.');
+        if (errorMsg.includes('user rejected')) {
+          throw new Error('Transaction was rejected by user');
         }
         throw new Error(`Payment error: ${errorMsg}`);
       }
@@ -117,13 +111,13 @@ const Staking = () => {
         throw new Error(paymentResult.error || 'Payment transaction failed');
       }
 
-      // Create capsule from agent if needed and stake with transaction signature
+      // Create capsule from agent if needed and stake with transaction hash
       const stakeResponse = await apiClient.stakeOnAgent(agentId, {
         stake_amount: amount,
         price_per_query: 0.05, // Default price, can be made configurable
         category: 'General',
         description: `Memory capsule for ${agentName}`,
-        payment_signature: paymentResult.signature // Include transaction signature
+        payment_signature: paymentResult.hash // Include transaction hash
       }) as any;
 
       // Refresh data
@@ -141,7 +135,7 @@ const Staking = () => {
           id: capsuleId, // Use actual capsule_id from backend if available
           name: agentName,
           category: 'General',
-          creator_wallet: publicKey.toBase58(),
+          creator_wallet: address,
           reputation: 0,
           stake_amount: amount,
           price_per_query: 0.05,
@@ -168,8 +162,8 @@ const Staking = () => {
       }
 
       // Note: Balance will decrease slightly due to transaction fees
-      // The actual SOL is sent to the staking pool (currently a placeholder address)
-      alert(`Successfully staked ${amount} SOL on ${agentName}!\n\nTransaction: ${paymentResult.signature}\n\nYour agent is now available in the Marketplace!`);
+      // The actual MNT is sent to the staking pool (currently a placeholder address)
+      alert(`Successfully staked ${amount} MNT on ${agentName}!\n\nTransaction: ${paymentResult.hash}\n\nYour agent is now available in the Marketplace!`);
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Staking failed';
       setError(message);
@@ -202,7 +196,7 @@ const Staking = () => {
       <div className="max-w-6xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Staking</h1>
-          <p className="text-gray-400">Stake SOL on your agents to make them available in the marketplace</p>
+          <p className="text-gray-400">Stake MNT on your agents to make them available in the marketplace</p>
         </div>
 
         {error && (
@@ -219,7 +213,7 @@ const Staking = () => {
               <Coins className="h-5 w-5 text-blue-400" />
               <span className="text-gray-400">Total Staked</span>
             </div>
-            <div className="text-2xl font-bold text-white">{totalStaked.toFixed(2)} SOL</div>
+            <div className="text-2xl font-bold text-white">{totalStaked.toFixed(2)} MNT</div>
             <div className="text-sm text-gray-400">Across all agents</div>
           </div>
 
@@ -285,7 +279,7 @@ const Staking = () => {
                         </div>
                         {existingStake && (
                           <div className="text-sm text-green-400 mt-1">
-                            Currently staked: {existingStake.stake_amount} SOL
+                            Currently staked: {existingStake.stake_amount} MNT
                           </div>
                         )}
                       </div>
@@ -294,7 +288,7 @@ const Staking = () => {
                     <div className="flex items-center space-x-2 mb-3">
                       <input
                         type="number"
-                        placeholder="Enter stake amount (SOL)"
+                        placeholder="Enter stake amount (MNT)"
                         value={stakeAmount}
                         onChange={(e) => setStakeAmounts(prev => ({ ...prev, [agent.id]: e.target.value }))}
                         disabled={isStaking}
