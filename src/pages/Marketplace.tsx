@@ -204,7 +204,7 @@ const Marketplace = () => {
   });
 
   return (
-    <div className="min-h-screen p-8 bg-gray-900">
+    <div className="min-h-screen p-8 bg-black">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">Marketplace</h1>

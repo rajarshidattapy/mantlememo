@@ -4,7 +4,17 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        'sans': ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        'sans': ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+      },
+      fontWeight: {
+        'normal': '700',
+        'bold': '700',
+        'semibold': '700',
+        'medium': '700',
+      },
+      letterSpacing: {
+        'tight': '-0.02em',
+        'normal': '-0.02em',
       },
       colors: {
         // Mantle-inspired color palette

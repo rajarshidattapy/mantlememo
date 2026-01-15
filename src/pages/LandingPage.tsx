@@ -14,6 +14,8 @@ import {
 } from "lucide-react";
 import mantleLogo from "../assets/logo.png";
 import appLogo from "../assets/logo.png";
+import cometBg from "../assets/comet.gif";
+import mantleIcon from "../assets/mantle.png";
 import { useMantleBalance } from "../hooks/useMantleBalance";
 
 export default function LandingPage() {
@@ -107,12 +109,18 @@ export default function LandingPage() {
       </nav>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden glow-teal">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative">
+      <section className="relative overflow-hidden glow-teal" style={{
+        backgroundImage: `url(${cometBg})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat'
+      }}>
+        <div className="absolute inset-0 bg-black bg-opacity-60"></div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative z-10">
           <div className="text-center mb-8">
             <span className="badge-mantle mb-6">
-              <Zap className="w-4 h-4" />
-              v1 live on Mantle Sepolia testnet
+              <img src={mantleIcon} alt="Mantle" className="w-4 h-4" />
+               ‎ v1 live on Mantle Sepolia testnet
             </span>
             <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
               Turn AI conversations into{' '}
@@ -121,7 +129,8 @@ export default function LandingPage() {
               </span>
               .
             </h1>
-            <p className="text-xl text-mantle-300 max-w-3xl mx-auto mb-10">
+            <p className="text-xl font-light text-white-200 max-w-3xl mx-auto mb-10">
+
               Mantlememo is a Mantle-native AI intelligence marketplace. Chat with agents, package
               long-term intelligence into capsules, and monetize them as revenue-generating assets.
             </p>
@@ -157,32 +166,32 @@ export default function LandingPage() {
                 </div>
               </div>
               <div className="p-6 font-mono text-sm overflow-x-auto">
-                <pre className="text-mantle-300">
+                <pre className="text-white">
                   <code>
                     <span className="text-mantle-600">1</span>{' '}
-                    <span className="text-mantle-400">from</span> mantlememo{' '}
-                    <span className="text-mantle-400">import</span> Agent{'\n'}
+                    <span className="text-white">from</span> mantlememo{' '}
+                    <span className="text-white">import</span> Agent{'\n'}
                     <span className="text-mantle-600">2</span> agent = Agent({'\n'}
                     <span className="text-mantle-600">3</span>{' '}
-                    <span className="text-mantle-500">    agent_id</span>=
-                    <span className="text-mantle-300">"your-agent-id"</span>,{'\n'}
+                    <span className="text-white">    agent_id</span>=
+                    <span className="text-white">"your-agent-id"</span>,{'\n'}
                     <span className="text-mantle-600">4</span>{' '}
-                    <span className="text-mantle-500">    chat_id</span>=
-                    <span className="text-mantle-300">"your-chat-id"</span>,{'\n'}
+                    <span className="text-white">    chat_id</span>=
+                    <span className="text-white">"your-chat-id"</span>,{'\n'}
                     <span className="text-mantle-600">5</span>{' '}
-                    <span className="text-mantle-500">    wallet_address</span>=
-                    <span className="text-mantle-300">"YourMantleWalletAddress"</span>,{'\n'}
+                    <span className="text-white">    wallet_address</span>=
+                    <span className="text-white">"YourMantleWalletAddress"</span>,{'\n'}
                     <span className="text-mantle-600">6</span>{' '}
-                    <span className="text-mantle-500">    base_url</span>=
-                    <span className="text-mantle-300">"Mantlememo.ai"</span>
+                    <span className="text-white">    base_url</span>=
+                    <span className="text-white">"Mantlememo.ai"</span>
                     {'\n'}
                     <span className="text-mantle-600">7</span> ){'\n'}
                     <span className="text-mantle-600">8</span> {'\n'}
                     <span className="text-mantle-600">9</span> response = agent.
-                    <span className="text-mantle-400">chat</span>(
-                    <span className="text-mantle-300">"Your message here"</span>){'\n'}
+                    <span className="text-white">chat</span>(
+                    <span className="text-white">"Your message here"</span>){'\n'}
                     <span className="text-mantle-600">10</span>{' '}
-                    <span className="text-mantle-400">print</span>(response)
+                    <span className="text-white">print</span>(response)
                   </code>
                 </pre>
               </div>
